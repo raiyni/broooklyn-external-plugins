@@ -1,5 +1,8 @@
 package com.brooklyn.annoyancemute;
 
+import lombok.ToString;
+
+@ToString
 public class SoundEffect
 {
 	int id;

@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -44,12 +45,14 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.Text;
+import org.jetbrains.annotations.VisibleForTesting;
 
 @PluginDescriptor(
 	name = "Annoyance Mute",
 	description = "Selectively mute annoying game sounds",
 	tags = {"sound", "volume", "mute", "hub", "brooklyn", "pet", "stomp"}
 )
+@Slf4j
 public class AnnoyanceMutePlugin extends Plugin
 {
 	@Inject
@@ -61,7 +64,8 @@ public class AnnoyanceMutePlugin extends Plugin
 	@Inject
 	private AnnoyanceMuteConfig config;
 
-	HashSet<SoundEffect> soundEffects = new HashSet<>();
+	@VisibleForTesting
+	public HashSet<SoundEffect> soundEffects = new HashSet<>();
 
 	@Provides
 	AnnoyanceMuteConfig provideConfig(ConfigManager configManager)
@@ -522,9 +526,11 @@ public class AnnoyanceMutePlugin extends Plugin
 		}
 	}
 
-	private boolean shouldMute(int soundId, SoundEffectType type)
+	public boolean shouldMute(int soundId, SoundEffectType type)
 	{
 		SoundEffect soundEffect = new SoundEffect(soundId, type, client.getLocalPlayer().getAnimation());
+		log.info("{}", soundEffect);
+
 		if (getSelectedSounds().contains(Integer.toString(soundId)))
 		{
 			return true;
@@ -545,7 +551,7 @@ public class AnnoyanceMutePlugin extends Plugin
 		}
 	}
 
-	List<String> getSelectedSounds()
+	public List<String> getSelectedSounds()
 	{
 		final String configSounds = config.soundsToMute().toLowerCase();
 
